@@ -190,10 +190,12 @@ func TestIntegerLiteralExpresion(t *testing.T) {
 
 func TestParsingPrefixExpression(t *testing.T) {
 	prefixTests := []struct {
-		input        string
-		operator     string
-		integerValue int64
+		input    string
+		operator string
+		value    interface{}
 	}{
+		{"!true", "!", true},
+		{"!false", "!", false},
 		{"!5;", "!", 5},
 		{"-15;", "-", 15},
 	}
@@ -235,7 +237,7 @@ func TestParsingPrefixExpression(t *testing.T) {
 				exp.Operator,
 			)
 		}
-		if !testIntegerLiteral(t, exp.Right, tt.integerValue) {
+		if !testLiteralExpression(t, exp.Right, tt.value) {
 			return
 		}
 	}
@@ -268,10 +270,13 @@ func testIntegerLiteral(t *testing.T, il ast.Expression, value int64) bool {
 func TestParsingInfixExpressions(t *testing.T) {
 	infixTests := []struct {
 		input      string
-		leftValue  int64
+		leftValue  interface{}
 		operator   string
-		rightValue int64
+		rightValue interface{}
 	}{
+		{"true == true", true, "==", true},
+		{"true != false", true, "!=", false},
+		{"false == false", false, "==", false},
 		{"5 + 5;", 5, "+", 5},
 		{"5 - 5;", 5, "-", 5},
 		{"5 * 5;", 5, "*", 5},
@@ -320,6 +325,22 @@ func TestOperatorPrecedenceParsing(t *testing.T) {
 		input    string
 		expected string
 	}{
+		{
+			"true",
+			"true",
+		},
+		{
+			"false",
+			"false",
+		},
+		{
+			"3 > 5 == false",
+			"((3 > 5) == false)",
+		},
+		{
+			"3 < 5 == true",
+			"((3 < 5) == true)",
+		},
 		{
 			"-a * b",
 			"((-a) * b)",
@@ -419,6 +440,8 @@ func testLiteralExpression(
 		return testIntegerLiteral(t, exp, v)
 	case string:
 		return testIdentifier(t, exp, v)
+	case bool:
+		return testBooleanLiteral(t, exp, v)
 	}
 
 	t.Errorf("type of exp not handled. got=%T", exp)
@@ -484,27 +507,38 @@ func TestBooleanExpression(t *testing.T) {
 		)
 	}
 
-	exp, ok := stmt.Expression.(*ast.Boolean)
+	if !testLiteralExpression(t, stmt.Expression, true) {
+		return
+	}
+}
+
+func testBooleanLiteral(t *testing.T, exp ast.Expression, value bool) bool {
+	e, ok := exp.(*ast.Boolean)
 	if !ok {
-		t.Fatalf(
+		t.Errorf(
 			"stmt.Expression is not ast.Boolean. got=%T",
-			stmt.Expression,
+			exp,
 		)
+		return false
 	}
 
-	if exp.Value != true {
-		t.Fatalf(
-			"exp.Value is not %v. got=%v",
-			true,
-			exp.Value,
+	if e.Value != value {
+		t.Errorf(
+			"exp.Value is not %t. got=%t",
+			value,
+			e.Value,
 		)
+		return false
 	}
 
-	if exp.TokenLiteral() != "true" {
-		t.Fatalf(
-			"exp.TokenLiteral not %v. got=%v",
-			"true",
-			exp.TokenLiteral(),
+	if e.TokenLiteral() != fmt.Sprintf("%t", value) {
+		t.Errorf(
+			"exp.TokenLiteral not %t. got=%s",
+			value,
+			e.TokenLiteral(),
 		)
+		return false
 	}
+
+	return true
 }
