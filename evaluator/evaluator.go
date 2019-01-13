@@ -40,6 +40,10 @@ func evalInfixExpression(op string, left, right object.Object) object.Object {
 	case left.Type() == object.INTEGER_OBJ &&
 		right.Type() == object.INTEGER_OBJ:
 		return evalIntegerInfixExpression(op, left, right)
+	case op == "==":
+		return evalBoolean(left == right)
+	case op == "!=":
+		return evalBoolean(left != right)
 	default:
 		return NULL
 	}
