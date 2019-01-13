@@ -5,6 +5,11 @@ import (
 	"github.com/yuya373/monkey/object"
 )
 
+var (
+	TRUE  = &object.Boolean{Value: true}
+	FALSE = &object.Boolean{Value: false}
+)
+
 func Eval(node ast.Node) object.Object {
 	switch node := node.(type) {
 	case *ast.Program:
@@ -15,9 +20,19 @@ func Eval(node ast.Node) object.Object {
 		return &object.Integer{
 			Value: node.Value,
 		}
+	case *ast.Boolean:
+		return evalBoolean(node.Value)
 	}
 
 	return nil
+}
+
+func evalBoolean(b bool) *object.Boolean {
+	if b {
+		return TRUE
+	}
+
+	return FALSE
 }
 
 func evalStatements(stmts []ast.Statement) object.Object {
