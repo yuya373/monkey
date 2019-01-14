@@ -104,19 +104,12 @@ func extendFunctionEnv(fn *object.Function, args []object.Object) *object.Enviro
 
 	maxArgsIdx := len(args) - 1
 	for i, param := range fn.Parameters {
+		fn.Env.Delete(param.Value)
+
 		if i <= maxArgsIdx {
 			env.Set(param.Value, args[i])
 		}
 	}
-	// >>let x = 99
-	// >>let f = fn(x) { x }
-	// >>f()
-	// 99
-	// ---------------------
-	// >>let f = fn(x) { x }
-	// >>let x = 99;
-	// >>f()
-	// 99
 
 	return env
 }

@@ -141,6 +141,14 @@ f()
 `,
 			"identifier not found: x",
 		},
+		{
+			`
+let x = 99
+let f = fn(x) { x }
+f()
+`,
+			"identifier not found: x",
+		},
 	}
 
 	for _, tt := range tests {
