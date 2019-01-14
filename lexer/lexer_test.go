@@ -15,13 +15,18 @@ let result = add(five, ten);
 !-/*5;
 5 < 10 > 5;
 if (5 < 10) {
-  return true;
+	return true;
 } else {
-  return false;
+	return false;
 }
 
 10 == 10;
 10 != 9;
+"foobar"
+"foo bar"
+"hello \"world\""
+"hello\n world"
+"hello\t\t\tworld"
 `
 
 	tests := []struct {
@@ -109,6 +114,12 @@ if (5 < 10) {
 		{token.NEQ, "!="},
 		{token.INT, "9"},
 		{token.SEMICOLON, ";"},
+
+		{token.STRING, "foobar"},
+		{token.STRING, "foo bar"},
+		{token.STRING, `hello \"world\"`},
+		{token.STRING, `hello\n world`},
+		{token.STRING, `hello\t\t\tworld`},
 
 		{token.EOF, ""},
 	}
