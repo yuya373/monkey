@@ -7,6 +7,38 @@ import (
 	"testing"
 )
 
+func TestStringLiteral(t *testing.T) {
+	tests := []struct {
+		input    string
+		expected string
+	}{
+		{`"Hello World"`, "Hello World"},
+		{`"Hello \"World\""`, `Hello \"World\"`},
+		{`"Hello \nWorld"`, `Hello \nWorld`},
+		{`"Hello\t\t\tWorld"`, `Hello\t\t\tWorld`},
+	}
+
+	for _, tt := range tests {
+		e := testEval(tt.input)
+		str, ok := e.(*object.String)
+		if !ok {
+			t.Errorf(
+				"object is not String. got=%T (%+v)",
+				e,
+				e,
+			)
+			continue
+		}
+
+		if str.Value != tt.expected {
+			t.Errorf(
+				"String has wrong value. got=%q",
+				str.Value,
+			)
+		}
+	}
+}
+
 func TestClosures(t *testing.T) {
 	input := `
 let newAdder = fn(x) {
