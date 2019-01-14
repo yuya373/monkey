@@ -10,7 +10,7 @@ import (
 func TestClosures(t *testing.T) {
 	input := `
 let newAdder = fn(x) {
-  fn(y) { x + y }
+	fn(y) { x + y }
 }
 
 let addTwo = newAdder(2)
