@@ -7,6 +7,26 @@ import (
 	"testing"
 )
 
+func TestStringConcatenation(t *testing.T) {
+	input := `"Hello" + " " + "World!"`
+	e := testEval(input)
+	str, ok := e.(*object.String)
+	if !ok {
+		t.Fatalf(
+			"object is not String. got=%T (%+v)",
+			e,
+			e,
+		)
+	}
+
+	if str.Value != "Hello World!" {
+		t.Errorf(
+			"String has wrong value. got=%q",
+			str.Value,
+		)
+	}
+}
+
 func TestStringLiteral(t *testing.T) {
 	tests := []struct {
 		input    string
@@ -180,6 +200,10 @@ let f = fn(x) { x }
 f()
 `,
 			"identifier not found: x",
+		},
+		{
+			`"Hello" - "World"`,
+			"unknown operator: STRING - STRING",
 		},
 	}
 
