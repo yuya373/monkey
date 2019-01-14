@@ -5,6 +5,17 @@ type Environment struct {
 	outer *Environment
 }
 
+func CloneEnvironment(source *Environment) *Environment {
+	s := make(map[string]Object)
+	for k, v := range source.store {
+		s[k] = v
+	}
+
+	return &Environment{
+		store: s,
+	}
+}
+
 func NewEnclosedEnvironment(outer *Environment) *Environment {
 	env := NewEnvironment()
 	env.outer = outer

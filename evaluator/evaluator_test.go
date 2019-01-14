@@ -133,6 +133,14 @@ if (10 > 1) {
 			"foobar",
 			"identifier not found: foobar",
 		},
+		{
+			`
+let f = fn(x) { x }
+let x = 99
+f()
+`,
+			"identifier not found: x",
+		},
 	}
 
 	for _, tt := range tests {
